@@ -1,0 +1,46 @@
+[project]
+name = "ai-support-bot"
+version = "0.1.0"
+description = "AI support bot for a car service: LangGraph agent that manages bookings and answers FAQ over RAG"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.15",
+    "alembic>=1.14",
+    "asyncpg>=0.30",
+    "fastapi>=0.115",
+    "langchain>=0.3",
+    "langchain-anthropic>=0.3",
+    "langchain-chroma>=0.2",
+    "langchain-openai>=0.3",
+    "langgraph>=0.3",
+    "langgraph-checkpoint-postgres>=2.0",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "sqlalchemy[asyncio]>=2.0",
+    "uvicorn>=0.34",
+]
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.20",
+    "httpx>=0.28",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "ruff>=0.9",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.uv]
+package = false
