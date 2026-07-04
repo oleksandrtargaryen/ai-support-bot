@@ -7,6 +7,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.types import Checkpointer
 
 from app.agent.prompts import build_system_prompt
+from app.agent.rag import search_faq
 from app.agent.tools import BOOKING_TOOLS
 from app.config import get_settings
 
@@ -15,7 +16,7 @@ def build_graph(
     checkpointer: Checkpointer = None, llm: BaseChatModel | None = None
 ) -> CompiledStateGraph:
     settings = get_settings()
-    tools = [*BOOKING_TOOLS]
+    tools = [*BOOKING_TOOLS, search_faq]
     llm = llm or init_chat_model(settings.llm_model)
     llm_with_tools = llm.bind_tools(tools)
 
