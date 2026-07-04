@@ -104,7 +104,7 @@ async def create_booking(
     )
     session.add(appointment)
     await session.commit()
-    await session.refresh(appointment, ["service", "mechanic"])
+    await session.refresh(appointment, ["service", "mechanic", "client"])
     return appointment
 
 
