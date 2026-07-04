@@ -39,7 +39,10 @@ async def check_availability(service_id: int, day: date) -> str:
     """Get free time slots for a service on a given day (YYYY-MM-DD)."""
     settings = get_settings()
     async with get_session() as session:
-        service = await booking.get_service(session, service_id)
+        try:
+            service = await booking.get_service(session, service_id)
+        except booking.BookingError as exc:
+            return str(exc)
         slots = await find_available_slots(
             session, service.duration_min, day, settings, datetime.now()
         )
@@ -54,15 +57,18 @@ async def create_booking(service_id: int, starts_at: datetime, config: RunnableC
     """Book a service at the given start time (ISO format, e.g. 2026-07-06T10:00)."""
     settings = get_settings()
     async with get_session() as session:
-        appt = await booking.create_booking(
-            session,
-            telegram_id=_telegram_id(config),
-            service_id=service_id,
-            starts_at=starts_at,
-            settings=settings,
-            now=datetime.now(),
-            client_name=config["configurable"].get("client_name", ""),
-        )
+        try:
+            appt = await booking.create_booking(
+                session,
+                telegram_id=_telegram_id(config),
+                service_id=service_id,
+                starts_at=starts_at,
+                settings=settings,
+                now=datetime.now(),
+                client_name=config["configurable"].get("client_name", ""),
+            )
+        except booking.BookingError as exc:
+            return str(exc)
         return f"Booked. {_format_appointment(appt)}"
 
 
@@ -80,7 +86,10 @@ async def my_bookings(config: RunnableConfig) -> str:
 async def cancel_booking(appointment_id: int, config: RunnableConfig) -> str:
     """Cancel one of the client's appointments by its id."""
     async with get_session() as session:
-        appt = await booking.cancel_booking(session, _telegram_id(config), appointment_id)
+        try:
+            appt = await booking.cancel_booking(session, _telegram_id(config), appointment_id)
+        except booking.BookingError as exc:
+            return str(exc)
         return f"Cancelled appointment #{appt.id}."
 
 
@@ -91,14 +100,17 @@ async def reschedule_booking(
     """Move one of the client's appointments to a new start time (ISO format)."""
     settings = get_settings()
     async with get_session() as session:
-        appt = await booking.reschedule_booking(
-            session,
-            telegram_id=_telegram_id(config),
-            appointment_id=appointment_id,
-            new_starts_at=new_starts_at,
-            settings=settings,
-            now=datetime.now(),
-        )
+        try:
+            appt = await booking.reschedule_booking(
+                session,
+                telegram_id=_telegram_id(config),
+                appointment_id=appointment_id,
+                new_starts_at=new_starts_at,
+                settings=settings,
+                now=datetime.now(),
+            )
+        except booking.BookingError as exc:
+            return str(exc)
         return f"Rescheduled. {_format_appointment(appt)}"
 
 
